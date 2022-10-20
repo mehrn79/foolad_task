@@ -15,7 +15,7 @@
       :show-borders="true"
       :allow-column-resizing="true"
       :repaint-changes-only="true"
-      
+      @saving="onSaving"
     >
     <DxEditing
         v-model="changes"
@@ -183,7 +183,11 @@ export default {
     saveChanges() {
       this.$refs.dataGrid.instance.state(null);
     },
-    ...mapActions(['setEditRowKey', 'setChanges', 'loadOrders', 'insert', 'update', 'remove']),
+    ...mapActions(['insert', 'update', 'remove','saveChange']),
+    onSaving(e) {
+      e.cancel = true;
+      e.promise = this.saveChange(e.changes[0]);
+    },
   }
 }
 </script>

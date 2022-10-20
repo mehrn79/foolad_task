@@ -70,7 +70,7 @@ const store = () => {
             },
         
             update(context, change) {
-               
+               console.log(change)
                 fetch(`https://dummyjson.com/products/${change.key}`, {
                 method: 'PUT', 
                 headers: { 'Content-Type': 'application/json' },
@@ -83,7 +83,6 @@ const store = () => {
             },
 
             async remove(context, change) {
-
                 try {
                     await Axios(`https://dummyjson.com/products/${change.key}`, {
                     method: 'DELETE',
@@ -92,11 +91,34 @@ const store = () => {
                     context.commit('removeItem', change )
                 } catch (error) {
                     console.log(error)
+                }   
+            },
+
+            async saveChange({ commit, dispatch }, change) {
+              if (change && change.type) {
+                commit('updateIsLoading', true);
+        
+                try {
+                  switch (change.type) {
+                    case 'insert':
+                      await dispatch('insert', change);
+                      break;
+                    case 'update':
+                      await dispatch('update', change);
+                      break;
+                    case 'remove':
+                      await dispatch('remove', change);
+                      break;
+                    default:
+                      break;
+                  }
+                } finally {
+                  commit('updateIsLoading', false);
                 }
-               
-                
+              }
             },
           },
+          
     })
     }
 
